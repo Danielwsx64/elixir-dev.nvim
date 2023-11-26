@@ -2,10 +2,37 @@
 
 A Neovim lua plugin for Elixir development.
 
+
+## Installation
+
+Using [plug](https://github.com/junegunn/vim-plug):
+
+```vim
+Plug 'Danielwsx64/elixir-dev.nvim'
+```
+
+Using [packer](https://github.com/wbthomason/packer.nvim):
+
+```
+use "Danielwsx64/elixir-dev.nvim"
+```
+
 ## Using
 
+### Pipelize
+```
+:ElixirDev pipelize
+```
 
-## Testing
+### Create custom keymaps
+
+```vimscript
+vim.keymap.set("n", "<leader>fp", "<CMD>ElixirDev pipelize<CR>", { desc = "Elixir Pipelize function", silent = true })
+```
+
+## Contributing
+
+### Testing
 
 This uses [busted][busted], [luassert][luassert] (both through
 [plenary.nvim][plenary]) and [matcher_combinators][matcher_combinators] to
@@ -37,24 +64,12 @@ $ make watch
 In both commands you myght specify a single spec to test/watch using:
 
 ```bash
-$ make test SPEC=spec/elixir_dev/my_cool_module_spec.lua
-$ make watch SPEC=spec/elixir_dev/my_cool_module_spec.lua
+$ make test SPEC=spec/elixir_dev/pipelize_spec.lua
+$ make watch SPEC=spec/elixir_dev/pipelize_spec.lua
 ```
 
-## Github actions
-
-An Action will run all the tests and the linter on every commit on the main
-branch and also on Pull Request. Tests will be run using 
-[stable and nightly][neovim-test-versions] versions of Neovim.
-
-[lua]: https://www.lua.org/
 [entr]: https://eradman.com/entrproject/
-[luarocks]: https://luarocks.org/
 [busted]: https://olivinelabs.com/busted/
 [luassert]: https://github.com/Olivine-Labs/luassert
 [plenary]: https://github.com/nvim-lua/plenary.nvim
 [matcher_combinators]: https://github.com/m00qek/matcher_combinators.lua
-[integration-badge]: https://github.com/m00qek/plugin-template.nvim/actions/workflows/integration.yml/badge.svg
-[integration-runs]: https://github.com/m00qek/plugin-template.nvim/actions/workflows/integration.yml
-[neovim-test-versions]: .github/workflows/integration.yml#L17
-[help]: doc/elixir-dev.txt
