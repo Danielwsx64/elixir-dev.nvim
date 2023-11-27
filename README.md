@@ -1,5 +1,7 @@
 # elixir-dev.nvim
 
+[![Integration][integration-badge]][integration-runs]
+
 A Neovim lua plugin for Elixir development.
 
 
@@ -68,8 +70,13 @@ $ make test SPEC=spec/elixir_dev/pipelize_spec.lua
 $ make watch SPEC=spec/elixir_dev/pipelize_spec.lua
 ```
 
+**NOTE**: Created with help of [plugin-template][plugin-template].
+
 [entr]: https://eradman.com/entrproject/
 [busted]: https://olivinelabs.com/busted/
 [luassert]: https://github.com/Olivine-Labs/luassert
 [plenary]: https://github.com/nvim-lua/plenary.nvim
 [matcher_combinators]: https://github.com/m00qek/matcher_combinators.lua
+[plugin-template]: https://github.com/m00qek/plugin-template.nvim
+[integration-badge]: https://github.com/Danielwsx64/elixir-dev.nvim/actions/workflows/integration.yml/badge.svg
+[integration-runs]: https://github.com/Danielwsx64/elixir-dev.nvim/actions/workflows/integration.yml
