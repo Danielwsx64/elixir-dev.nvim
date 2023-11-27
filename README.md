@@ -26,6 +26,8 @@ use "Danielwsx64/elixir-dev.nvim"
 :ElixirDev pipelize
 ```
 
+![Pipelize Example](https://github.com/Danielwsx64/elixir-dev.nvim/assets/17304947/7afca688-62f1-448b-b7a3-977f71909c7b)
+
 ### Create custom keymaps
 
 ```vimscript
@@ -69,6 +71,13 @@ In both commands you myght specify a single spec to test/watch using:
 $ make test SPEC=spec/elixir_dev/pipelize_spec.lua
 $ make watch SPEC=spec/elixir_dev/pipelize_spec.lua
 ```
+
+# Features (TODO)
+
+- [x] Function pipelize
+- [ ] Switch anonymous function sintax (fn/&)
+- [ ] Switch map keys (string/atom)
+- [ ] Switch map, lists, keywords (inline/multiline)
 
 **NOTE**: Created with help of [plugin-template][plugin-template].
 
