@@ -7,6 +7,7 @@ RUN=nvim --headless --noplugin -u spec.vim
 prepare:
 	git submodule update --depth 1 --init
 	luarocks install luacheck --local
+	nvim -u spec.vim "+TSInstallSync elixir" +qall
 
 nvim:
 	@nvim --noplugin -u spec.vim

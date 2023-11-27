@@ -4,3 +4,6 @@
 [submodule "test/vendor/plenary.nvim"]
 	path = test/vendor/plenary.nvim
 	url = https://github.com/nvim-lua/plenary.nvim.git
+[submodule "test/vendor/nvim-treesitter"]
+	path = test/vendor/nvim-treesitter
+	url = https://github.com/nvim-treesitter/nvim-treesitter.git
