@@ -113,6 +113,23 @@ describe("_to_pipe", function()
 
 		vim.api.nvim_buf_delete(buf, { force = true })
 	end)
+
+	it("when function argument is a call with dot and no arguments", function()
+		local text = { "Enum.map(map.items, & &1.field)" }
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+		local node = root:child(0)
+
+		local expected = "map.items\n|> Enum.map(& &1.field)"
+
+		assert.are.equal(expected, pipelize._to_pipe(node, buf))
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
 end)
 
 describe("_undo_pipe", function()
@@ -229,6 +246,23 @@ describe("_undo_pipe", function()
 		local node = root:child(0)
 
 		local expected = "value = custom_function(%{}, ~D[2023-01-01]) do\ncool_function(value)\nend"
+
+		assert.are.equal(expected, pipelize._undo_pipe(node, buf))
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("when function argument is a call with dot and no arguments", function()
+		local text = { "map.items", "|> Enum.map(& &1.field)" }
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+		local node = root:child(0)
+
+		local expected = "Enum.map(map.items, & &1.field)"
 
 		assert.are.equal(expected, pipelize._undo_pipe(node, buf))
 

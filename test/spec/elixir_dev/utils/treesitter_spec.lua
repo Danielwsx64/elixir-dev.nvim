@@ -74,6 +74,7 @@ describe("get_master_node", function()
 			"  end",
 			"end",
 		}
+
 		local buf = vim.api.nvim_create_buf(false, true)
 		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
 
@@ -94,6 +95,158 @@ describe("get_master_node", function()
 		local master_node = treesitter_utils.get_master_node(argument_node)
 
 		assert.combinators.match(function_node, master_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("when inside a multiline map returns map parent master node", function()
+		local text = {
+			"%{",
+			'  "key" => value,',
+			'  "other_key" => "other_value"',
+			"}",
+			"|> new()",
+			"|> insert()",
+		}
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local value_node =
+			root:named_child(0):named_child(0):named_child(0):named_child(0):named_child(0):named_child(1)
+
+		local master_node = treesitter_utils.get_master_node(value_node)
+
+		assert.combinators.match(root, master_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("when inside a multiline map (atom keys) returns map parent master node", function()
+		local text = {
+			"%{",
+			"  key: value,",
+			"  other_key: value",
+			"}",
+			"|> simple_function()",
+			"|> another()",
+		}
+
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local value_node = root:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(1)
+			:named_child(1)
+
+		local master_node = treesitter_utils.get_master_node(value_node)
+
+		assert.combinators.match(root, master_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("when start node is a call function inside a map stops on the call function", function()
+		local text = {
+			"%{",
+			'  "key" => function(value),',
+			'  "other_key" => "other_value"',
+			"}",
+			"|> new()",
+			"|> insert()",
+		}
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local inner_funcition_node =
+			root:named_child(0):named_child(0):named_child(0):named_child(0):named_child(0):named_child(1)
+
+		local argument_node = inner_funcition_node:named_child(1):named_child(0)
+
+		local master_node = treesitter_utils.get_master_node(argument_node)
+
+		assert.combinators.match(inner_funcition_node, master_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("when start node is a call function inside a map (with atom keys) stops on the call function", function()
+		local text = {
+			"%{",
+			"  key: function(value),",
+			'  other_key: "other_value"',
+			"}",
+			"|> new()",
+			"|> insert()",
+		}
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local inner_funcition_node = root:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(1)
+
+		local argument_node = inner_funcition_node:named_child(1):named_child(0)
+
+		local master_node = treesitter_utils.get_master_node(argument_node)
+
+		assert.combinators.match(inner_funcition_node, master_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("when start node is a pipe inside a map (with atom keys) stops on the call function", function()
+		local text = {
+			"%{",
+			"  key: value |> map_fn()",
+			"}",
+			"|> one()",
+			"|> two()",
+		}
+
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local inner_pipe_funcition_node = root:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(0)
+			:named_child(1)
+
+		local argument_node = inner_pipe_funcition_node:named_child(0)
+
+		local master_node = treesitter_utils.get_master_node(argument_node)
+
+		assert.combinators.match(inner_pipe_funcition_node, master_node)
 
 		vim.api.nvim_buf_delete(buf, { force = true })
 	end)

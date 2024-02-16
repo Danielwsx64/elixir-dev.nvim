@@ -47,7 +47,7 @@ Self._to_pipe = function(node, buf)
 	if node:type() == "call" then
 		local arguments = node:child(1)
 		local do_block = node:child(2)
-		local arguments_count = arguments:named_child_count()
+		local arguments_count = arguments and arguments:named_child_count() or 0
 
 		if arguments_count == 0 then
 			return get_node_text(node, buf)
