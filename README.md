@@ -23,7 +23,7 @@ use "Danielwsx64/elixir-dev.nvim"
 
 - [x] `pipelize`: Switch function call syntax to pipe syntax and vice versa
 - [x] `fn_shorthand`: Switch anonymous function to shorthand syntax and vice versa
-- [ ] Switch map keys (string/atom)
+- [x] `switch_keys`: Switch map keys format (string/atom)
 - [ ] Switch map, lists, keywords (inline/multiline)
 - [ ] Jump to test and back (create file if not exists)
 - [ ] Telescope list public fns
