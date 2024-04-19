@@ -22,7 +22,7 @@ use "Danielwsx64/elixir-dev.nvim"
 ## Features (WIP)
 
 - [x] `pipelize`: Switch function call syntax to pipe syntax and vice versa
-- [x] `fn_shorthand`: Switch anonymous function sintax to shorthand syntax and vice versa
+- [x] `fn_shorthand`: Switch anonymous function to shorthand syntax and vice versa
 - [ ] Switch map keys (string/atom)
 - [ ] Switch map, lists, keywords (inline/multiline)
 - [ ] Jump to test and back (create file if not exists)
@@ -30,7 +30,7 @@ use "Danielwsx64/elixir-dev.nvim"
 - [ ] Telescope list describes
 - [ ] Telescope list tests
 
-![Features Example](https://github.com/Danielwsx64/elixir-dev.nvim/assets/17304947/7afca688-62f1-448b-b7a3-977f71909c7b)
+![Features Example](https://github.com/Danielwsx64/elixir-dev.nvim/assets/17304947/20d3856d-c103-4d3a-83b1-3f1ecabc3504)
 
 ### How to use
 You can just call the vim command like:
