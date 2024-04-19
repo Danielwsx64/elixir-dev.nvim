@@ -30,7 +30,7 @@ use "Danielwsx64/elixir-dev.nvim"
 - [ ] Telescope list describes
 - [ ] Telescope list tests
 
-![Features Example](https://github.com/Danielwsx64/elixir-dev.nvim/assets/17304947/20d3856d-c103-4d3a-83b1-3f1ecabc3504)
+![Features Example](https://github.com/Danielwsx64/elixir-dev.nvim/assets/17304947/e94b25e3-20da-4704-902f-8d0db27a9951)
 
 ### How to use
 You can just call the vim command like:
