@@ -19,19 +19,31 @@ Using [packer](https://github.com/wbthomason/packer.nvim):
 use "Danielwsx64/elixir-dev.nvim"
 ```
 
-## Using
+## Features (WIP)
 
-### Pipelize
+- [x] `pipelize`: Switch function call syntax to pipe syntax and vice versa
+- [x] `fn_shorthand`: Switch anonymous function sintax to shorthand syntax and vice versa
+- [ ] Switch map keys (string/atom)
+- [ ] Switch map, lists, keywords (inline/multiline)
+- [ ] Jump to test and back (create file if not exists)
+- [ ] Telescope list public fns
+- [ ] Telescope list describes
+- [ ] Telescope list tests
+
+![Features Example](https://github.com/Danielwsx64/elixir-dev.nvim/assets/17304947/7afca688-62f1-448b-b7a3-977f71909c7b)
+
+### How to use
+You can just call the vim command like:
+
 ```
 :ElixirDev pipelize
 ```
 
-![Pipelize Example](https://github.com/Danielwsx64/elixir-dev.nvim/assets/17304947/7afca688-62f1-448b-b7a3-977f71909c7b)
-
-### Create custom keymaps
+#### Create custom keymaps
 
 ```vimscript
-vim.keymap.set("n", "<leader>fp", "<CMD>ElixirDev pipelize<CR>", { desc = "Elixir Pipelize function", silent = true })
+vim.keymap.set("n", "<leader>fp", "<CMD>ElixirDev pipelize<CR>", { desc = "Format pipe syntax", silent = true })
+vim.keymap.set("n", "<leader>ff", "<CMD>ElixirDev fn_shorthand<CR>", { desc = "Format anonymous fn syntax", silent = true })
 ```
 
 ## Contributing
@@ -71,17 +83,6 @@ In both commands you myght specify a single spec to test/watch using:
 $ make test SPEC=spec/elixir_dev/pipelize_spec.lua
 $ make watch SPEC=spec/elixir_dev/pipelize_spec.lua
 ```
-
-# Features (TODO)
-
-- [x] Function pipelize
-- [x] Switch anonymous function sintax (fn/&)
-- [ ] Switch map keys (string/atom)
-- [ ] Switch map, lists, keywords (inline/multiline)
-- [ ] Jump to test and back (create file if not exists)
-- [ ] Telescope list public fns
-- [ ] Telescope list describes
-- [ ] Telescope list tests
 
 **NOTE**: Created with help of [plugin-template][plugin-template].
 
