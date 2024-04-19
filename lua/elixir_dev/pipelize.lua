@@ -1,6 +1,6 @@
 local string_utils = require("elixir_dev.utils.string")
 local treesitter_utils = require("elixir_dev.utils.treesitter")
-local notify = require("elixir_dev.utils.notify")
+local vim_buffer = require("elixir_dev.utils.vim_buffer")
 
 local get_node_text = vim.treesitter.get_node_text
 
@@ -36,11 +36,6 @@ local function rewrite_function_without_first_arg(node, buf, arguments, args_cou
 	end
 
 	return rewrote_fn
-end
-
-local function replace_node(buf, start_row, start_col, end_row, end_col, replacement)
-	vim.api.nvim_buf_set_text(buf, start_row, start_col, end_row, end_col, replacement)
-	vim.api.nvim_win_set_cursor(0, { start_row + 1, start_col })
 end
 
 Self._to_pipe = function(node, buf)
@@ -163,11 +158,9 @@ Self._is_pipelizable = function(node, buf)
 end
 
 Self.call = function()
-	local buf = vim.api.nvim_get_current_buf()
+	local buf = treesitter_utils.get_current_elixir_buf()
 
-	if not treesitter_utils.is_elixir_lang(buf) then
-		notify.warn("Current buffer has no Elixir TreeSitter Parser enabled", Self)
-
+	if not buf then
 		return false
 	end
 
@@ -177,7 +170,7 @@ Self.call = function()
 	if Self._is_pipe(master_node, buf) then
 		local replacement = string_utils.indent_to(Self._undo_pipe(master_node, buf), start_col)
 
-		replace_node(buf, start_row, start_col, end_row, end_col, replacement)
+		vim_buffer.replace_content(buf, start_row, start_col, end_row, end_col, replacement)
 		return true
 	end
 
@@ -187,7 +180,7 @@ Self.call = function()
 		if pipelized ~= get_node_text(master_node, buf) then
 			local replacement = string_utils.indent_to(pipelized, start_col)
 
-			replace_node(buf, start_row, start_col, end_row, end_col, replacement)
+			vim_buffer.replace_content(buf, start_row, start_col, end_row, end_col, replacement)
 			return true
 		end
 	end

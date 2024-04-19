@@ -75,9 +75,13 @@ $ make watch SPEC=spec/elixir_dev/pipelize_spec.lua
 # Features (TODO)
 
 - [x] Function pipelize
-- [ ] Switch anonymous function sintax (fn/&)
+- [x] Switch anonymous function sintax (fn/&)
 - [ ] Switch map keys (string/atom)
 - [ ] Switch map, lists, keywords (inline/multiline)
+- [ ] Jump to test and back (create file if not exists)
+- [ ] Telescope list public fns
+- [ ] Telescope list describes
+- [ ] Telescope list tests
 
 **NOTE**: Created with help of [plugin-template][plugin-template].
 

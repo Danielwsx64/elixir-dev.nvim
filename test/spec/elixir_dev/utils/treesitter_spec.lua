@@ -252,6 +252,109 @@ describe("get_master_node", function()
 	end)
 end)
 
+describe("get_parent_node", function()
+	it("return parent call node", function()
+		local text = { "def implement() do", "cool_function(argument)", "end" }
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local function_node = root:named_child(0):named_child(2):named_child(0)
+		local argument_node = function_node:named_child(1):named_child(0)
+
+		local parent_node = treesitter_utils.get_parent_node({ "call" }, argument_node)
+
+		assert.combinators.match(function_node, parent_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("return parent anonymous function node", function()
+		local text = { "fn key, value -> IO.inspect({key, value}, limit: :infinity) end" }
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local function_node = root:named_child(0)
+		local argument_node = function_node
+			:named_child(0)
+			:named_child(1)
+			:named_child(0)
+			:named_child(1)
+			:named_child(1)
+			:named_child(0)
+			:named_child(1)
+
+		local parent_node = treesitter_utils.get_parent_node({ "anonymous_function" }, argument_node)
+
+		assert.combinators.match(function_node, parent_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("return parent unary operator node with multi types allowed", function()
+		local text = { "&IO.inspect(&1, limiti: :infinity)" }
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local unary_op_node = root:named_child(0)
+		local argument_node = unary_op_node:named_child(0):named_child(1):named_child(1):named_child(0):named_child(1)
+
+		local parent_node = treesitter_utils.get_parent_node({ "anonymous_function", "unary_operator" }, argument_node)
+
+		assert.combinators.match(unary_op_node, parent_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("when current node is the looking type", function()
+		local text = { "fn key, value -> IO.inspect({key, value}, limit: :infinity) end" }
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local function_node = root:named_child(0)
+
+		local parent_node = treesitter_utils.get_parent_node({ "anonymous_function" }, function_node)
+
+		assert.combinators.match(function_node, parent_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+
+	it("return nil when not found", function()
+		local text = { "&IO.inspect(&1, limiti: :infinity)" }
+		local buf = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(buf, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(buf, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local argument_node =
+			root:named_child(0):named_child(0):named_child(1):named_child(1):named_child(0):named_child(1)
+
+		local parent_node = treesitter_utils.get_parent_node({ "anonymous_function" }, argument_node)
+
+		assert.is_nil(parent_node)
+
+		vim.api.nvim_buf_delete(buf, { force = true })
+	end)
+end)
+
 describe("is_elixir_lang", function()
 	it("return true when the given buf has an elixir parser enabled", function()
 		local buf = vim.api.nvim_create_buf(false, true)

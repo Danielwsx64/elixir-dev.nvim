@@ -1,10 +1,12 @@
 local pipelize = require("elixir_dev.pipelize")
+local fn_shorthand = require("elixir_dev.fn_shorthand")
 local notify = require("elixir_dev.utils.notify")
 
 local Self = { _icon = "" }
 
 local _commands = {
 	["pipelize"] = pipelize.call,
+	["fn_shorthand"] = fn_shorthand.call,
 }
 
 Self.options = nil

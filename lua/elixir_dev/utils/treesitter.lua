@@ -1,4 +1,5 @@
 local highlighter = require("vim.treesitter.highlighter")
+local notify = require("elixir_dev.utils.notify")
 
 local Self = {}
 
@@ -46,8 +47,8 @@ Self.get_master_node = function(initial_node)
 		node = parent
 		parent = node:parent()
 
-		if hard_stop_for_inner_pipes(node, buf) then
-			parent = nil
+		if hard_stop_for_inner_pipes(node) then
+			return node
 		end
 
 		if parent and types_to_jump_to_parent[parent:type()] then
@@ -61,6 +62,36 @@ Self.get_master_node = function(initial_node)
 	end
 
 	return node
+end
+
+Self.get_parent_node = function(types, initial_node)
+	local ts_utils = require("nvim-treesitter.ts_utils")
+
+	local node = initial_node or ts_utils.get_node_at_cursor()
+
+	while node do
+		for _, type in ipairs(types) do
+			if node:type() == type then
+				return node
+			end
+		end
+
+		node = node:parent()
+	end
+
+	return node
+end
+
+Self.get_current_elixir_buf = function()
+	local buf = vim.api.nvim_get_current_buf()
+
+	if not Self.is_elixir_lang(buf) then
+		notify.warn("Current buffer has no Elixir TreeSitter Parser enabled", Self)
+
+		return nil
+	end
+
+	return buf
 end
 
 return Self
