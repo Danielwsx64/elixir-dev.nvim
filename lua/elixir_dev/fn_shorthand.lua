@@ -104,7 +104,7 @@ local function replace_args(node, args, buf)
 	return result
 end
 
-local function rebuild_args_list(args, body)
+local function rebuild_args_list(args)
 	local args_txt = ""
 
 	for i, _ in pairs(args) do
