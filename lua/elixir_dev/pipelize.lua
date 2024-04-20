@@ -9,7 +9,7 @@ local elixir_keywords_regex = vim.regex(
 		.. "\\|defmacrop\\|defmodule\\|defn\\|defnp\\|defoverridable\\|defp\\|defprotocol\\|defstruct$"
 )
 
-local Self = { _name = "Pipelize", _icon = "" }
+local M = {}
 
 local function rewrite_function_without_first_arg(node, buf, arguments, args_count, do_block)
 	local last_child_index = args_count - 1
@@ -38,7 +38,7 @@ local function rewrite_function_without_first_arg(node, buf, arguments, args_cou
 	return rewrote_fn
 end
 
-Self._to_pipe = function(node, buf)
+function M._to_pipe(node, buf)
 	if node:type() == "call" then
 		local arguments = node:child(1)
 		local do_block = node:child(2)
@@ -48,7 +48,7 @@ Self._to_pipe = function(node, buf)
 			return get_node_text(node, buf)
 		end
 
-		return Self._to_pipe(arguments:named_child(0), buf)
+		return M._to_pipe(arguments:named_child(0), buf)
 			.. "\n|> "
 			.. rewrite_function_without_first_arg(node, buf, arguments, arguments_count, do_block)
 	end
@@ -59,13 +59,13 @@ Self._to_pipe = function(node, buf)
 		local right = node:field("right")[1]
 		local left_string = get_node_text(node:field("left")[1], buf)
 
-		return left_string .. " " .. operator .. " " .. Self._to_pipe(right, buf)
+		return left_string .. " " .. operator .. " " .. M._to_pipe(right, buf)
 	end
 
 	return get_node_text(node, buf)
 end
 
-Self._undo_pipe = function(node, buf)
+function M._undo_pipe(node, buf)
 	if node:type() ~= "binary_operator" then
 		return get_node_text(node, buf)
 	end
@@ -76,7 +76,7 @@ Self._undo_pipe = function(node, buf)
 
 	if operator == "=" then
 		local left_string = get_node_text(left, buf)
-		return left_string .. " " .. operator .. " " .. Self._undo_pipe(right, buf)
+		return left_string .. " " .. operator .. " " .. M._undo_pipe(right, buf)
 	end
 
 	if right:type() == "call" then
@@ -101,7 +101,7 @@ Self._undo_pipe = function(node, buf)
 			rewrote_fn = rewrote_fn .. "("
 		end
 
-		rewrote_fn = rewrote_fn .. Self._undo_pipe(left, buf)
+		rewrote_fn = rewrote_fn .. M._undo_pipe(left, buf)
 
 		if arguments then
 			local arguments_count = arguments:named_child_count() - 1
@@ -125,7 +125,7 @@ Self._undo_pipe = function(node, buf)
 	end
 end
 
-Self._is_pipe = function(node, buf)
+function M._is_pipe(node, buf)
 	if node:type() ~= "binary_operator" then
 		return false
 	end
@@ -137,13 +137,13 @@ Self._is_pipe = function(node, buf)
 	end
 
 	if operator == "=" then
-		return Self._is_pipe(node:field("right")[1], buf)
+		return M._is_pipe(node:field("right")[1], buf)
 	end
 
 	return false
 end
 
-Self._is_pipelizable = function(node, buf)
+function M._is_pipelizable(node, buf)
 	if node:type() == "call" then
 		if not elixir_keywords_regex:match_str(get_node_text(node:named_child(0), buf)) then
 			return true
@@ -151,13 +151,13 @@ Self._is_pipelizable = function(node, buf)
 	end
 
 	if node:type() == "binary_operator" then
-		return Self._is_pipelizable(node:field("right")[1], buf)
+		return M._is_pipelizable(node:field("right")[1], buf)
 	end
 
 	return false
 end
 
-Self.call = function()
+function M.call()
 	local buf = treesitter_utils.get_current_elixir_buf()
 
 	if not buf then
@@ -167,15 +167,15 @@ Self.call = function()
 	local master_node = treesitter_utils.get_master_node()
 	local start_row, start_col, end_row, end_col = master_node:range()
 
-	if Self._is_pipe(master_node, buf) then
-		local replacement = string_utils.indent_to(Self._undo_pipe(master_node, buf), start_col)
+	if M._is_pipe(master_node, buf) then
+		local replacement = string_utils.indent_to(M._undo_pipe(master_node, buf), start_col)
 
 		vim_buffer.replace_content(buf, start_row, start_col, end_row, end_col, replacement)
 		return true
 	end
 
-	if Self._is_pipelizable(master_node, buf) then
-		local pipelized = Self._to_pipe(master_node, buf)
+	if M._is_pipelizable(master_node, buf) then
+		local pipelized = M._to_pipe(master_node, buf)
 
 		if pipelized ~= get_node_text(master_node, buf) then
 			local replacement = string_utils.indent_to(pipelized, start_col)
@@ -188,4 +188,4 @@ Self.call = function()
 	return false
 end
 
-return Self
+return M

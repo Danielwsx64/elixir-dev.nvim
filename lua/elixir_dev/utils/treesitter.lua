@@ -1,7 +1,7 @@
 local highlighter = require("vim.treesitter.highlighter")
 local notify = require("elixir_dev.utils.notify")
 
-local Self = {}
+local M = {}
 
 local types_to_jump_to_parent = { ["map_content"] = true, ["pair"] = true }
 local types_to_update_start_limit = { ["binary_operator"] = true, ["map"] = true, ["keywords"] = true }
@@ -29,13 +29,13 @@ local function hard_stop_for_inner_pipes(node)
 	return false
 end
 
-Self.is_elixir_lang = function(buf)
-	local buff_active = highlighter.active[buf]
+function M.is_ts_elixir_parser_enabled(bufnr)
+	local buff_active = highlighter.active[bufnr]
 
 	return buff_active and buff_active.tree._lang == "elixir" or false
 end
 
-Self.get_master_node = function(initial_node)
+function M.get_master_node(initial_node)
 	local ts_utils = require("nvim-treesitter.ts_utils")
 
 	local node = initial_node or ts_utils.get_node_at_cursor()
@@ -64,16 +64,20 @@ Self.get_master_node = function(initial_node)
 	return node
 end
 
-Self.get_parent_node = function(types, initial_node)
+function M.get_parent_node(types, validation, initial_node)
 	local ts_utils = require("nvim-treesitter.ts_utils")
+
+	if not validation or type(validation) ~= "function" then
+		validation = function(_)
+			return true
+		end
+	end
 
 	local node = initial_node or ts_utils.get_node_at_cursor()
 
 	while node do
-		for _, type in ipairs(types) do
-			if node:type() == type then
-				return node
-			end
+		if vim.tbl_contains(types, node:type()) and validation(node) then
+			return node
 		end
 
 		node = node:parent()
@@ -82,16 +86,22 @@ Self.get_parent_node = function(types, initial_node)
 	return node
 end
 
-Self.get_current_elixir_buf = function()
-	local buf = vim.api.nvim_get_current_buf()
+function M.get_current_elixir_buf()
+	local bufnr = vim.api.nvim_get_current_buf()
 
-	if not Self.is_elixir_lang(buf) then
-		notify.warn("Current buffer has no Elixir TreeSitter Parser enabled", Self)
+	if not M.is_ts_elixir_parser_enabled(bufnr) then
+		notify.warn("Current buffer has no Elixir TreeSitter Parser enabled", M)
 
 		return nil
 	end
 
-	return buf
+	return bufnr
 end
 
-return Self
+function M.get_root(bufnr)
+	local parser = vim.treesitter.get_parser(bufnr, "elixir")
+	local tree = parser:parse()[1]
+	return tree:root()
+end
+
+return M

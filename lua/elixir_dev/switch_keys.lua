@@ -3,9 +3,9 @@ local treesitter_utils = require("elixir_dev.utils.treesitter")
 
 local get_node_text = vim.treesitter.get_node_text
 
-local Self = {}
+local M = {}
 
-Self._to_atoms = function(node, buf)
+function M._to_atoms(node, buf)
 	-- This MUST by bode backward because the tree update will change the nodes positions
 	for i = node:named_child(0):named_child_count() - 1, 0, -1 do
 		local n = node:named_child(0):named_child(i)
@@ -27,7 +27,7 @@ Self._to_atoms = function(node, buf)
 	end
 end
 
-Self._to_strings = function(node, buf)
+function M._to_strings(node, buf)
 	-- This MUST by bode backward because the tree update will change the nodes positions
 	for i = node:named_child(0):named_child(0):named_child_count() - 1, 0, -1 do
 		local n = node:named_child(0):named_child(0):named_child(i)
@@ -47,7 +47,7 @@ Self._to_strings = function(node, buf)
 	end
 end
 
-Self.call = function()
+function M.call()
 	local buf = treesitter_utils.get_current_elixir_buf()
 
 	if not buf then
@@ -61,10 +61,10 @@ Self.call = function()
 	end
 
 	if node:named_child(0):named_child(0):type() == "keywords" then
-		Self._to_strings(node, buf)
+		M._to_strings(node, buf)
 	else
-		Self._to_atoms(node, buf)
+		M._to_atoms(node, buf)
 	end
 end
 
-return Self
+return M

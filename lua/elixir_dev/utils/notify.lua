@@ -1,4 +1,4 @@
-local Self = {}
+local M = {}
 local plugin_name = "elixir_dev"
 
 local function build_title(mod)
@@ -9,32 +9,32 @@ local function build_title(mod)
 	return plugin_name
 end
 
-function Self.info(message, mod)
+function M.info(message, mod)
 	vim.notify(message, vim.log.levels.INFO, {
 		title = build_title(mod),
 		icon = mod._icon,
 	})
 end
 
-function Self.warn(message, mod)
+function M.warn(message, mod)
 	vim.notify(message, vim.log.levels.WARN, {
 		title = build_title(mod),
 		icon = mod._icon,
 	})
 end
 
-function Self.err(message, mod)
+function M.err(message, mod)
 	vim.notify(message, vim.log.levels.ERROR, {
 		title = build_title(mod),
 		icon = mod._icon,
 	})
 end
 
-function Self.debug(message, mod)
+function M.debug(message, mod)
 	vim.notify(message, vim.log.levels.DEBUG, {
 		title = build_title(mod),
 		icon = mod._icon,
 	})
 end
 
-return Self
+return M

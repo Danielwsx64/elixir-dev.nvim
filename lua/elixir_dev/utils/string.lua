@@ -1,6 +1,6 @@
-local Self = {}
+local M = {}
 
-Self.indent_to = function(text, col)
+function M.indent_to(text, col)
 	local lines = vim.split(text, "\n")
 
 	for key, value in pairs(lines) do
@@ -12,4 +12,4 @@ Self.indent_to = function(text, col)
 	return lines
 end
 
-return Self
+return M

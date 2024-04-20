@@ -3,7 +3,7 @@ local vim_buffer = require("elixir_dev.utils.vim_buffer")
 
 local get_node_text = vim.treesitter.get_node_text
 
-local Self = { _name = "Anonymous Function", _icon = "" }
+local M = {}
 
 local args_names = {
 	"first",
@@ -159,7 +159,7 @@ local function try_shorthand_arity(node, buf, args)
 	return string.format("&%s/%s", get_node_text(node:named_child(0), buf), #args)
 end
 
-Self._to_fn_shorthand = function(node, buf)
+function M._to_fn_shorthand(node, buf)
 	local arg_node = node:named_child(0):field("left")
 	local body_node = node:named_child(0):field("right")
 
@@ -174,7 +174,7 @@ Self._to_fn_shorthand = function(node, buf)
 	return string.format("&(%s)", replace_args(body_node[1], args, buf))
 end
 
-Self._to_anonymous_fn = function(node, buf)
+function M._to_anonymous_fn(node, buf)
 	local args, txt
 	local possible_types = { ["call"] = true, ["identifier"] = true }
 	local operand = node:named_child(0)
@@ -192,7 +192,7 @@ Self._to_anonymous_fn = function(node, buf)
 	return rebuild_anonymous_fn(args, txt)
 end
 
-Self.call = function()
+function M.call()
 	local buf = treesitter_utils.get_current_elixir_buf()
 
 	if not buf then
@@ -208,18 +208,18 @@ Self.call = function()
 	local start_row, start_col, end_row, end_col = node:range()
 
 	if node and node:type() == "anonymous_function" then
-		local replacement = Self._to_fn_shorthand(node, buf)
+		local replacement = M._to_fn_shorthand(node, buf)
 
 		vim_buffer.replace_content(buf, start_row, start_col, end_row, end_col, { replacement })
 		return true
 	end
 
 	if node and node:type() == "unary_operator" then
-		local replacement = Self._to_anonymous_fn(node, buf)
+		local replacement = M._to_anonymous_fn(node, buf)
 
 		vim_buffer.replace_content(buf, start_row, start_col, end_row, end_col, { replacement })
 		return true
 	end
 end
 
-return Self
+return M

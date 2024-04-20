@@ -1,6 +1,6 @@
-local Self = {}
+local M = {}
 
-Self.replace_content = function(buf, start_row, start_col, end_row, end_col, replacement, set_cursor)
+function M.replace_content(buf, start_row, start_col, end_row, end_col, replacement, set_cursor)
 	vim.api.nvim_buf_set_text(buf, start_row, start_col, end_row, end_col, replacement)
 
 	if set_cursor == nil or set_cursor then
@@ -8,4 +8,4 @@ Self.replace_content = function(buf, start_row, start_col, end_row, end_col, rep
 	end
 end
 
-return Self
+return M
