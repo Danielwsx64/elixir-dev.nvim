@@ -25,7 +25,7 @@ use "Danielwsx64/elixir-dev.nvim"
 - [x] `fn_shorthand`: Switch anonymous function to shorthand syntax and vice versa
 - [x] `switch_keys`: Switch map keys format (string/atom)
 - [ ] Switch map, lists, keywords (inline/multiline)
-- [ ] Jump to test and back (create file if not exists)
+- [x] `jump_to_test`: Jump to test and back (create file if not exists). The command jumps to fn or describe definition.
 - [ ] Telescope list public fns
 - [ ] Telescope list describes
 - [ ] Telescope list tests
