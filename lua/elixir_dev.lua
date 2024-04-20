@@ -28,6 +28,7 @@ end
 -- This function is supposed to be called explicitly by users to configure this
 -- plugin
 function M.setup(options)
+	print(vim.inspect(options))
 	-- avoid setting global values outside of this function. Global state
 	-- mutations are hard to debug and test, so having them in a single
 	-- function/module makes it easier to reason about all possible changes
