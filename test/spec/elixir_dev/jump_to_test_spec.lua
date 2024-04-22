@@ -2,6 +2,52 @@ local jump_to_test = require("elixir_dev.jump_to_test")
 local treesitter_utils = require("elixir_dev.utils.treesitter")
 
 describe("_directions", function()
+	it("absolute path for implementation file", function()
+		local result = jump_to_test._directions("/home/user/project/lib/xcribe", "conn_parser.ex")
+
+		local expected = {
+			["exs"] = {
+				expected_caller = "describe",
+				go_to = {
+					dir = "/home/user/project/lib/xcribe/",
+					file = "conn_parser.ex",
+				},
+			},
+			["ex"] = {
+				expected_caller = "def",
+				go_to = {
+					dir = "/home/user/project/test/xcribe/",
+					file = "conn_parser_test.exs",
+				},
+			},
+		}
+
+		assert.combinators.match(result, expected)
+	end)
+
+	it("absolute path for test file", function()
+		local result = jump_to_test._directions("/home/user/project/test/xcribe", "conn_parser_test.exs")
+
+		local expected = {
+			["exs"] = {
+				expected_caller = "describe",
+				go_to = {
+					dir = "/home/user/project/lib/xcribe/",
+					file = "conn_parser.ex",
+				},
+			},
+			["ex"] = {
+				expected_caller = "def",
+				go_to = {
+					dir = "/home/user/project/test/xcribe/",
+					file = "conn_parser_test.exs",
+				},
+			},
+		}
+
+		assert.combinators.match(result, expected)
+	end)
+
 	it("relative path for implementation file", function()
 		local result = jump_to_test._directions("lib/xcribe", "conn_parser.ex")
 

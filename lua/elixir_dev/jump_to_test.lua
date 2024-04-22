@@ -137,8 +137,8 @@ end
 
 function M._directions(head, tail)
 	local file_base = string.gsub(string.gsub(tail, ".ex$", ""), "_test.exs$", "")
-	local implement_dir = ""
-	local test_dir = ""
+	local implement_dir = vim.startswith(head, "/") and "/" or ""
+	local test_dir = implement_dir
 
 	for word in string.gmatch(head, "[%w_]+") do
 		if word == "test" or word == "lib" then
