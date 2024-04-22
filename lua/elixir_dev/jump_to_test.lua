@@ -6,7 +6,7 @@ local get_node_text = vim.treesitter.get_node_text
 local M = {}
 
 local function jump_to(dest, options)
-	local full_path = string.format("%s/%s", dest.dir, dest.file)
+	local full_path = string.format("%s/%s", dest.go_to.dir, dest.go_to.file)
 
 	local file_exists = vim.fn.filereadable(full_path) == 1
 
@@ -17,7 +17,7 @@ local function jump_to(dest, options)
 			return false
 		end
 
-		vim.fn.mkdir(dest.dir, "p")
+		vim.fn.mkdir(dest.go_to.dir, "p")
 	end
 
 	local jumped_from = file_exists and M._get_caller_info(dest.expected_caller) or nil
@@ -36,6 +36,10 @@ local function extrat_info_from_def_call(node, bufnr)
 			name = get_node_text(fn_node, bufnr),
 			arity = 0,
 		}
+	end
+
+	if fn_node:type() == "binary_operator" then
+		fn_node = fn_node:named_child(0)
 	end
 
 	return {
@@ -114,6 +118,10 @@ function M._get_def_node_by(jumped_from, bufnr)
 			end
 		end
 
+		if fn_node and fn_node:type() == "binary_operator" then
+			fn_node = fn_node:named_child(0)
+		end
+
 		if fn_node and fn_node:named_child(0) then
 			local name = get_node_text(fn_node:named_child(0), bufnr)
 			local arity = fn_node:named_child(1) and fn_node:named_child(1):named_child_count() or 0
@@ -129,17 +137,33 @@ end
 
 function M._directions(head, tail)
 	local file_base = string.gsub(string.gsub(tail, ".ex$", ""), "_test.exs$", "")
+	local implement_dir = ""
+	local test_dir = ""
+
+	for word in string.gmatch(head, "[%w_]+") do
+		if word == "test" or word == "lib" then
+			implement_dir = implement_dir .. "lib/"
+			test_dir = test_dir .. "test/"
+		else
+			implement_dir = implement_dir .. word .. "/"
+			test_dir = test_dir .. word .. "/"
+		end
+	end
 
 	return {
 		["exs"] = {
 			expected_caller = "describe",
-			dir = string.gsub(head, "/test/", "/lib/"),
-			file = string.format("%s.ex", file_base),
+			go_to = {
+				dir = implement_dir,
+				file = string.format("%s.ex", file_base),
+			},
 		},
 		["ex"] = {
 			expected_caller = "def",
-			dir = string.gsub(head, "/lib/", "/test/"),
-			file = string.format("%s_test.exs", file_base),
+			go_to = {
+				dir = test_dir,
+				file = string.format("%s_test.exs", file_base),
+			},
 		},
 	}
 end

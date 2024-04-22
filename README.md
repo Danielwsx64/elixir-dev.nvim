@@ -44,6 +44,8 @@ You can just call the vim command like:
 ```vimscript
 vim.keymap.set("n", "<leader>fp", "<CMD>ElixirDev pipelize<CR>", { desc = "Format pipe syntax", silent = true })
 vim.keymap.set("n", "<leader>ff", "<CMD>ElixirDev fn_shorthand<CR>", { desc = "Format anonymous fn syntax", silent = true })
+vim.keymap.set("n", "<leader>fk", "<CMD>ElixirDev switch_keys<CR>", { desc = "Switch map keys syntax", silent = true })
+vim.keymap.set("n", "<leader>gt", "<CMD>ElixirDev jump_to_test<CR>", { desc = "Go to test and back", silent = true })
 ```
 
 ## Contributing
