@@ -6,18 +6,18 @@ local get_node_text = vim.treesitter.get_node_text
 local M = {}
 
 local function jump_to(dest, options)
-	local full_path = string.format("%s/%s", dest.go_to.dir, dest.go_to.file)
+	local full_path = dest.go_to.dir .. dest.go_to.file
 
 	local file_exists = vim.fn.filereadable(full_path) == 1
 
 	if not file_exists then
 		local opt = vim.fn.confirm(string.format("Do you want to create %s?", full_path), "&Yes\n&No", 2)
 
-		if opt == 2 then
+		if opt == 1 then
+			vim.fn.mkdir(dest.go_to.dir, "p")
+		else
 			return false
 		end
-
-		vim.fn.mkdir(dest.go_to.dir, "p")
 	end
 
 	local jumped_from = file_exists and M._get_caller_info(dest.expected_caller) or nil
