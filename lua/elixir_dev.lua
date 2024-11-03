@@ -3,6 +3,7 @@ local jump_to_test = require("elixir_dev.jump_to_test")
 local notify = require("elixir_dev.utils.notify")
 local pipelize = require("elixir_dev.pipelize")
 local switch_keys = require("elixir_dev.switch_keys")
+local module = require("elixir_dev.module")
 
 local M = { _icon = "" }
 
@@ -11,6 +12,7 @@ local _commands = {
 	["jump_to_test"] = jump_to_test.call,
 	["pipelize"] = pipelize.call,
 	["switch_keys"] = switch_keys.call,
+	["yank_module_name"] = module.yank_module_name,
 }
 
 M.options = nil
