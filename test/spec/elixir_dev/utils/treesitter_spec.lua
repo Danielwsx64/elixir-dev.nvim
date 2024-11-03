@@ -367,3 +367,71 @@ describe("is_ts_elixir_parser_enabled", function()
 		vim.api.nvim_buf_delete(bufnr, { force = true })
 	end)
 end)
+
+describe("get_all_child", function()
+	it("return all child by function", function()
+		local text = {
+			"defmodule Example.Module do",
+			"  def function_name(arg) do",
+			"    :ok",
+			"  end",
+			"",
+			"  def function_name do",
+			"  end",
+			"end",
+		}
+
+		local bufnr = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(bufnr, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(bufnr, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local node = root:child(0):child(2)
+
+		local expected_one = node:child(1)
+		local expected_two = node:child(2)
+
+		local results = treesitter_utils.get_all_child(function(n)
+			local target_node = n:field("target")[1]
+
+			return target_node and vim.treesitter.get_node_text(target_node, bufnr) == "def"
+		end, node)
+
+		assert.combinators.match(results[1], expected_one)
+		assert.combinators.match(results[2], expected_two)
+
+		vim.api.nvim_buf_delete(bufnr, { force = true })
+	end)
+
+	it("return empty list when not found", function()
+		local text = {
+			"defmodule Example.Module do",
+			"  def function_name(arg) do",
+			"    :ok",
+			"  end",
+			"",
+			"  def function_name do",
+			"  end",
+			"end",
+		}
+
+		local bufnr = vim.api.nvim_create_buf(false, true)
+		vim.api.nvim_buf_set_text(bufnr, 0, 0, 0, 0, text)
+
+		local parser = vim.treesitter.get_parser(bufnr, "elixir")
+		local tree = parser:parse()[1]
+		local root = tree:root()
+
+		local node = root:child(0):child(2)
+
+		local results = treesitter_utils.get_all_child(function()
+			return false
+		end, node)
+
+		assert.combinators.match(results, {})
+
+		vim.api.nvim_buf_delete(bufnr, { force = true })
+	end)
+end)

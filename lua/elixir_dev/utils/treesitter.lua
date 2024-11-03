@@ -86,6 +86,26 @@ function M.get_parent_node(types, validation, initial_node)
 	return node
 end
 
+function M.get_all_child(validation, initial_node)
+	local node = initial_node or ts_utils.get_node_at_cursor()
+
+	if not validation or type(validation) ~= "function" then
+		validation = function(_)
+			return true
+		end
+	end
+
+	local results = {}
+
+	for child in node:iter_children() do
+		if validation(child) then
+			table.insert(results, child)
+		end
+	end
+
+	return results
+end
+
 function M.get_current_elixir_buf()
 	local bufnr = vim.api.nvim_get_current_buf()
 
