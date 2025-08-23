@@ -63,6 +63,31 @@ function M.get_module_public_function_nodes(bufnr, node)
 	end, do_block_node)
 end
 
+function M.module_name_by_path(path)
+	local file_path = path or vim.fn.expand("%")
+
+	if file_path and file_path ~= "" then
+		local mod_name = file_path
+			:gsub(".ex$", "")
+			:gsub(".exs$", "")
+			:gsub("/", ".")
+			:gsub("(%l)(%w*)", function(a, b)
+				return string.upper(a) .. b
+			end)
+			:gsub("_", "")
+			:gsub("Api", "API")
+			:gsub("Json", "JSON")
+			:gsub(".Controllers", "")
+			:gsub(".Views", "")
+			:gsub("Lib.", "")
+			:gsub("Test.", "")
+
+		return mod_name
+	end
+
+	return "Module"
+end
+
 function M.yank_module_name()
 	local bufnr = treesitter_utils.get_current_elixir_buf()
 

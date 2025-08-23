@@ -122,3 +122,24 @@ describe("format_node_function", function()
 		vim.api.nvim_buf_delete(bufnr, { force = true })
 	end)
 end)
+
+describe("module_name_by_path", function()
+	it("return the module name by file path", function()
+		assert.are.equal("LiveRetro.Schema", module.module_name_by_path("lib/live_retro/schema.ex"))
+
+		assert.are.equal(
+			"LiveRetroWeb.UserAuthTest",
+			module.module_name_by_path("test/live_retro_web/user_auth_test.exs")
+		)
+
+		assert.are.equal(
+			"LiveRetroWeb.PageController",
+			module.module_name_by_path("lib/live_retro_web/controllers/page_controller.ex")
+		)
+
+		assert.are.equal(
+			"LiveRetroWeb.PageControllerTest",
+			module.module_name_by_path("test/live_retro_web/controllers/page_controller_test.exs")
+		)
+	end)
+end)

@@ -29,6 +29,11 @@ local function hard_stop_for_inner_pipes(node)
 	return false
 end
 
+function M.get_node_at_cursor()
+	-- Ignore injected langs
+	return require("nvim-treesitter.ts_utils").get_node_at_cursor(0, true)
+end
+
 function M.is_ts_elixir_parser_enabled(bufnr)
 	local buff_active = highlighter.active[bufnr]
 
@@ -36,9 +41,7 @@ function M.is_ts_elixir_parser_enabled(bufnr)
 end
 
 function M.get_master_node(initial_node)
-	local ts_utils = require("nvim-treesitter.ts_utils")
-
-	local node = initial_node or ts_utils.get_node_at_cursor()
+	local node = initial_node or M.get_node_at_cursor()
 
 	local parent = node:parent()
 	local start_row = node:start()
@@ -65,15 +68,13 @@ function M.get_master_node(initial_node)
 end
 
 function M.get_parent_node(types, validation, initial_node)
-	local ts_utils = require("nvim-treesitter.ts_utils")
-
 	if not validation or type(validation) ~= "function" then
 		validation = function(_)
 			return true
 		end
 	end
 
-	local node = initial_node or ts_utils.get_node_at_cursor()
+	local node = initial_node or M.get_node_at_cursor()
 
 	while node do
 		if vim.tbl_contains(types, node:type()) and validation(node) then
@@ -87,7 +88,7 @@ function M.get_parent_node(types, validation, initial_node)
 end
 
 function M.get_all_child(validation, initial_node)
-	local node = initial_node or ts_utils.get_node_at_cursor()
+	local node = initial_node or M.get_node_at_cursor()
 
 	if not validation or type(validation) ~= "function" then
 		validation = function(_)
