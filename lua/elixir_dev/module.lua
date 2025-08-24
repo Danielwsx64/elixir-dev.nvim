@@ -68,8 +68,8 @@ function M.module_name_by_path(path)
 
 	if file_path and file_path ~= "" then
 		local mod_name = file_path
-			:gsub(".ex$", "")
-			:gsub(".exs$", "")
+			:gsub("%.ex$", "")
+			:gsub("%.exs$", "")
 			:gsub("/", ".")
 			:gsub("(%l)(%w*)", function(a, b)
 				return string.upper(a) .. b
@@ -78,11 +78,11 @@ function M.module_name_by_path(path)
 			:gsub("Ui", "UI")
 			:gsub("Api", "API")
 			:gsub("Json", "JSON")
-			:gsub(".Controllers.", ".")
-			:gsub(".Views.", ".")
-			:gsub(".Live.", ".")
-			:gsub("Lib.", "")
-			:gsub("Test.", "")
+			:gsub("%.Controllers%.", ".")
+			:gsub("%.Views%.", ".")
+			:gsub("%.Live%.", ".")
+			:gsub("Lib%.", "")
+			:gsub("Test%.", "")
 
 		return mod_name
 	end
